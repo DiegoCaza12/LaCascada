@@ -9,15 +9,20 @@ $post=json_decode(file_get_contents('php://input'),true);
 if($post['accion']=="loggin")
 {
     $datos=array();
-    $sentencia=sprintf("Select * from persona where usuario='%s' and clave='%s'",$post['usuario'],md5($post['clave']));
+    $sentencia=sprintf("Select * from usuarios where usuario='%s' and clave='%s'",$post['usuario'],md5($post['clave']));
     $result=mysqli_query($mysqli, $sentencia);
     $f=0;
     while($row=mysqli_fetch_assoc($result))
     {
         array_push($datos,array(
-            'codigo'=>$row['codigo'],
+            'idusuario'=>$row['idusuario'],
+            'cedula'=>$row['cedula'],
             'nombre'=>$row['nombre'],
-            'apellido'=>$row['apellido']));
+            'apellido'=>$row['apellido'],
+            'email'=>$row['email'],
+            'telefono'=>$row['telefono'],
+            'direccion'=>$row['direccion'],
+            'tipo_usuario'=>$row['tipo_usuario']));
             $f++;
     }
     if($f>0)
