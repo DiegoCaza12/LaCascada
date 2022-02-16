@@ -35,11 +35,42 @@ if($post['accion']=="loggin")
     }
 echo $respuesta;
 }
-if($post['accion']=="insertp")
+if($post['accion']=="ListarU")
 {
     $datos=array();
-    $sentencia=sprintf("insert into persona (cedula, nombre, apellido, usuario, clave) 
-    values ('%s','%s','%s','%s','%s')",$post['cedula'],$post['nombre'],$post['apellido'],$post['usuario'],md5($post['clave']));
+    $sentencia=sprintf("select * from usuarios");
+    $result=mysqli_query($mysqli, $sentencia);
+    $f=0;
+
+    while($row=mysqli_fetch_assoc($result))
+    {
+        array_push($datos,array(
+            'cedula'=>$row['cedula'],
+            'nombre'=>$row['nombre'],
+            'apellido'=>$row['apellido'],
+            'email'=>$row['email'],
+            'telefono'=>$row['telefono'],
+            'direccion'=>$row['direccion'],
+            'usuario'=>$row['usuario'],
+            'clave'=>$row['clave'],
+            'tipo usuario'=>$row['tipo usuario']));
+            $f++;
+    }
+    if($f>0)
+    {
+        $respuesta= json_encode(array('estado'=>true, 'datos'=>$datos));
+    }
+    else
+    {
+        $respuesta= json_encode(array('estado'=>false));
+    }
+    echo $respuesta;
+}
+if($post['accion']=="insertarU")
+{
+    $datos=array();
+    $sentencia=sprintf("insert into usuarios (cedula, nombre, apellido, email, telefono, direccion, usuario, clave, tipo usuario) 
+    values ('%s','%s','%s','%s','%s','%s','%s','%s','%s')",$post['cedula'],$post['nombre'],$post['apellido'],$post['email'],$post['telefono'],$post['direccion'],$post['usuario'],md5($post['clave'],$post['tipo usuario']));
     $result=mysqli_query($mysqli, $sentencia);
 
     if($result)
@@ -52,6 +83,7 @@ if($post['accion']=="insertp")
     }
 echo $respuesta;
 }
+
 if($post['accion']=="insertc")
 {
     $datos=array();
@@ -70,32 +102,7 @@ if($post['accion']=="insertc")
     }
 echo $respuesta;
 }
-if($post['accion']=="Listar")
-{
-    $datos=array();
-    $sentencia=sprintf("select * from contacto where persona_codigo='%s'",$post['cod_persona']);
-    $result=mysqli_query($mysqli, $sentencia);
-    $f=0;
 
-    while($row=mysqli_fetch_assoc($result))
-    {
-        array_push($datos,array(
-            'codigo'=>$row['codigo'],
-            'nombre'=>$row['nombre'],
-            'apellido'=>$row['apellido'],
-            'telefono'=>$row['telefono']));
-            $f++;
-    }
-    if($f>0)
-    {
-        $respuesta= json_encode(array('estado'=>true, 'datos'=>$datos));
-    }
-    else
-    {
-        $respuesta= json_encode(array('estado'=>false));
-    }
-    echo $respuesta;
-}
 if($post['accion']=="Listar2")
 {
     $datos=array();
