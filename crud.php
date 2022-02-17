@@ -53,7 +53,7 @@ if($post['accion']=="ListarU")
             'direccion'=>$row['direccion'],
             'usuario'=>$row['usuario'],
             'clave'=>$row['clave'],
-            'tipo usuario'=>$row['tipo usuario']));
+            'tipo_usuario'=>$row['tipo_usuario']));
             $f++;
     }
     if($f>0)
