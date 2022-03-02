@@ -70,20 +70,25 @@ if($post['accion']=="insertc")
     }
 echo $respuesta;
 }
-if($post['accion']=="Listar")
+if($post['accion']=="ListarU")
 {
     $datos=array();
-    $sentencia=sprintf("select * from contacto where persona_codigo='%s'",$post['cod_persona']);
+    $sentencia=sprintf("select * from usuarios where idusuario='%s'",$post['cod']);
     $result=mysqli_query($mysqli, $sentencia);
     $f=0;
 
     while($row=mysqli_fetch_assoc($result))
     {
-        array_push($datos,array(
-            'codigo'=>$row['codigo'],
+        array_push($datos,array(   
+            'idusuario'=>$row['idusuario'],      
+            'cedula'=>$row['cedula'],
             'nombre'=>$row['nombre'],
             'apellido'=>$row['apellido'],
-            'telefono'=>$row['telefono']));
+            'email'=>$row['email'],
+            'telefono'=>$row['telefono'],
+            'direccion'=>$row['telefono']));
+            //'usuario'=>$row['usuario'],
+            //'clave'=>$row['clave']));
             $f++;
     }
     if($f>0)
