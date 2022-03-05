@@ -35,11 +35,11 @@ if($post['accion']=="loggin")
     }
 echo $respuesta;
 }
-if($post['accion']=="insertp")
+if($post['accion']=="insertarU")
 {
     $datos=array();
-    $sentencia=sprintf("insert into persona (cedula, nombre, apellido, usuario, clave) 
-    values ('%s','%s','%s','%s','%s')",$post['cedula'],$post['nombre'],$post['apellido'],$post['usuario'],md5($post['clave']));
+    $sentencia=sprintf("insert into usuarios (cedula, nombre, apellido,email,telefono,direccion, usuario, clave,tipo_usuario) 
+    values ('%s','%s','%s','%s','%s','%s','%s','%s','%s')",$post['cedula'],$post['nombre'],$post['apellido'],$post['email'],$post['telefono'],$post['direccion'],$post['usuario'],md5($post['clave']),$post['tipo_usuario']);
     $result=mysqli_query($mysqli, $sentencia);
 
     if($result)
@@ -52,12 +52,46 @@ if($post['accion']=="insertp")
     }
 echo $respuesta;
 }
-if($post['accion']=="insertc")
+if($post['accion']=="insertarC")
 {
     $datos=array();
-    $sentencia=sprintf("insert into contacto(persona_codigo, nombre, apellido, 
-    telefono) values ('%s','%s','%s','%s')",$post['codigo'], $post['nombre'],
-     $post['apellido'], $post['telefono'] );
+    $sentencia=sprintf("insert into clientes(cedula, nombre, apellido,email, 
+    telefono,direccion) values ('%s','%s','%s','%s','%s','%s')",$post['cedula'], $post['nombre'],
+     $post['apellido'],$post['email'], $post['telefono'],$post['direccion'] );
+    $result=mysqli_query($mysqli, $sentencia);
+
+    if($result)
+    {
+        $respuesta= json_encode(array('estado'=>true));
+    }
+    else
+    {
+        $respuesta= json_encode(array('estado'=>false));
+    }
+echo $respuesta;
+}
+if($post['accion']=="insertarP")
+{
+    $datos=array();
+    $sentencia=sprintf("insert into productos(nombre, detalle, precio ) values ('%s','%s','%s')",
+     $post['nombre'],$post['detalle'], $post['precio']);
+    $result=mysqli_query($mysqli, $sentencia);
+
+    if($result)
+    {
+        $respuesta= json_encode(array('estado'=>true));
+    }
+    else
+    {
+        $respuesta= json_encode(array('estado'=>false));
+    }
+echo $respuesta;
+}
+if($post['accion']=="insertarV")
+{
+    $datos=array();
+    $sentencia=sprintf("insert into registro_ventas(fecha, idproducto,idcliente,idusuario, cantidad,precio_unit,total ) values ('%s','%s','%s','%s','%s','%s','%s')",
+     $post['fecha'],$post['idproducto'], $post['idcliente'],$post['idusuario'],$post['cantidad'], $post['precio_unit'], $post['total']);
     $result=mysqli_query($mysqli, $sentencia);
 
     if($result)
@@ -86,7 +120,7 @@ if($post['accion']=="ListarU")
             'apellido'=>$row['apellido'],
             'email'=>$row['email'],
             'telefono'=>$row['telefono'],
-            'direccion'=>$row['telefono']));
+            'direccion'=>$row['direccion']));
             //'usuario'=>$row['usuario'],
             //'clave'=>$row['clave']));
             $f++;
@@ -101,19 +135,22 @@ if($post['accion']=="ListarU")
     }
     echo $respuesta;
 }
-if($post['accion']=="Listar2")
+if($post['accion']=="ListarC")
 {
     $datos=array();
-    $sentencia=sprintf("select * from contacto where codigo='%s'",$post['cod']);
+    $sentencia=sprintf("select * from clientes where idcliente='%s'",$post['cod']);
     $result=mysqli_query($mysqli, $sentencia);
     $f=0;
     while($row=mysqli_fetch_assoc($result))
     {
         array_push($datos,array(
-            'codigo'=>$row['codigo'],
+            'idcliente'=>$row['idcliente'],
+            'cedula'=>$row['cedula'],
             'nombre'=>$row['nombre'],
             'apellido'=>$row['apellido'],
-            'telefono'=>$row['telefono']));
+            'email'=>$row['email'],
+            'telefono'=>$row['telefono'],
+            'direccion'=>$row['direccion']));
             $f++;
     }
     if($f>0)
@@ -126,11 +163,65 @@ if($post['accion']=="Listar2")
     }
     echo $respuesta;
 }
-if($post['accion']=="modificar")
+if($post['accion']=="ListarP")
 {
     $datos=array();
-    $sentencia=sprintf("UPDATE contacto SET  nombre='%s', apellido='%s',  telefono='%s'  where codigo='%s'", 
-    $post['nombre'], $post['apellido'],$post['telefono'], $post['codigo']);
+    $sentencia=sprintf("Select * from productos where idproducto='%s'",$post['cod']);
+    $result=mysqli_query($mysqli, $sentencia);
+    $f=0;
+    while($row=mysqli_fetch_assoc($result))
+    {
+        array_push($datos,array(
+            'idproducto'=>$row['idproducto'],
+            'nombre'=>$row['nombre'],
+            'detalle'=>$row['detalle'],
+            'precio'=>$row['precio']));
+            $f++;
+    }
+    if($f>0)
+    {
+        $respuesta= json_encode(array('estado'=>true, 'datos'=>$datos));
+    }
+    else
+    {
+        $respuesta= json_encode(array('estado'=>false));
+    }
+    echo $respuesta;
+}
+if($post['accion']=="ListarV")
+{
+    $datos=array();
+    $sentencia=sprintf("Select * from registro_ventas where idventa='%s'",$post['cod']);
+    $result=mysqli_query($mysqli, $sentencia);
+    $f=0;
+    while($row=mysqli_fetch_assoc($result))
+    {
+        array_push($datos,array(
+            'idventa'=>$row['idventa'],
+            'fecha'=>$row['fecha'],
+            'idproducto'=>$row['idproducto'],
+            'idcliente'=>$row['idcliente'],
+            'idusuario'=>$row['idusuario'],
+            'cantidad'=>$row['cantidad'],
+            'precio_unit'=>$row['precio_unit'],
+            'total'=>$row['total']));
+            $f++;
+    }
+    if($f>0)
+    {
+        $respuesta= json_encode(array('estado'=>true, 'datos'=>$datos));
+    }
+    else
+    {
+        $respuesta= json_encode(array('estado'=>false));
+    }
+    echo $respuesta;
+}
+if($post['accion']=="modificarU")
+{
+    $datos=array();
+    $sentencia=sprintf("UPDATE usuarios SET  cedula='%',nombre='%s', apellido='%s',email='%s',  telefono='%s',direccion='%s',  where idusuario='%s'", 
+    $post['cedula'],$post['nombre'], $post['apellido'],$post['email'],$post['telefono'],$post['direccion'], $post['cod']);
     $result=mysqli_query($mysqli, $sentencia);
 
     if($result)
@@ -143,10 +234,74 @@ if($post['accion']=="modificar")
     }
 echo $respuesta;
 }
-if($post['accion']=="eliminar")
+if($post['accion']=="modificarP")
 {
     $datos=array();
-    $sentencia=sprintf("delete from contacto where codigo='%s'",$post['cod']);
+    $sentencia=sprintf("UPDATE productos SET  nombre='%s', detalle='%s', precio='%s'  where idproducto='%s'", $post['nombre'], $post['detalle'],$post['precio'], $post['cod']);
+    $result=mysqli_query($mysqli, $sentencia);
+
+    if($result)
+    {
+        $respuesta= json_encode(array('estado'=>true));
+    }
+    else
+    {
+        $respuesta= json_encode(array('estado'=>false));
+    }
+echo $respuesta;
+}
+if($post['accion']=="modificarV")
+{
+    $datos=array();
+    $sentencia=sprintf("UPDATE registro_ventas SET  fecha='%s', cantidad='%s', precio_unit='%s',total='%s'  where idventa='%s'AND idproducto='%s' AND idcliente='%s' AND idusuario='%s'", $post['fecha'], $post['cantidad'],$post['precio_unit'],$post['total'], $post['idventa'], $post['idproducto'], $post['idcliente'], $post['idusuario']);
+    $result=mysqli_query($mysqli, $sentencia);
+
+    if($result)
+    {
+        $respuesta= json_encode(array('estado'=>true));
+    }
+    else
+    {
+        $respuesta= json_encode(array('estado'=>false));
+    }
+echo $respuesta;
+}
+if($post['accion']=="eliminarU")
+{
+    $datos=array();
+    $sentencia=sprintf("DELETE from usuarios where idusuario='%s'",$post['cod']);
+    $result=mysqli_query($mysqli, $sentencia);
+
+    if($result)
+    {
+        $respuesta= json_encode(array('estado'=>true));
+    }
+    else
+    {
+        $respuesta= json_encode(array('estado'=>false));
+    }
+echo $respuesta;
+}
+if($post['accion']=="eliminarP")
+{
+    $datos=array();
+    $sentencia=sprintf("DELETE from productos where idproducto='%s'",$post['idproducto']);
+    $result=mysqli_query($mysqli, $sentencia);
+
+    if($result)
+    {
+        $respuesta= json_encode(array('estado'=>true));
+    }
+    else
+    {
+        $respuesta= json_encode(array('estado'=>false));
+    }
+echo $respuesta;
+}
+if($post['accion']=="eliminarV")
+{
+    $datos=array();
+    $sentencia=sprintf("DELETE from registro_venta where idventa='%s'",$post['cod']);
     $result=mysqli_query($mysqli, $sentencia);
 
     if($result)
